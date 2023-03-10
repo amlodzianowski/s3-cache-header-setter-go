@@ -1,0 +1,32 @@
+{
+  "name": "Go",
+  "image": "mcr.microsoft.com/devcontainers/go:0-1.20",
+  // Configure tool-specific properties.
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      // Set *default* container specific settings.json values on container create.
+      "settings": {
+        "editor.formatOnSave": true,
+        "[go]": {
+          "editor.defaultFormatter": "golang.Go",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+          }
+        },
+        "go.docsTool": "gogetdoc",
+        "go.lintOnSave": "package",
+        "go.lintTool": "golangci-lint",
+        "go.formatTool": "goimports",
+        "go.useLanguageServer": true
+      },
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "golang.Go"
+      ]
+    }
+  },
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "echo hello",
+  "remoteUser": "vscode"
+}

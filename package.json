@@ -1,0 +1,31 @@
+{
+  "name": "s3-cache-header-setter-go",
+  "version": "0.0.1",
+  "description": "Serverless S3 cache header setter",
+  "author": "Adrian Mlodzianowski",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amlodzianowski/s3-cache-header-setter-go"
+  },
+  "scripts": {
+    "release": "standard-version -a",
+    "deploy": "GOOS=linux GOARCH=amd64 go build  -o bin/s3-cache-header-setter-go . && npx sls deploy -s dev"
+  },
+  "keywords": [
+    "serverless",
+    "s3",
+    "cache",
+    "header",
+    "go",
+    "golang",
+    "ttl",
+    "cloudfront"
+  ],
+  "dependencies": {
+    "serverless": "^3.28.1"
+  },
+  "devDependencies": {
+    "standard-version": "^9.5.0"
+  }
+}

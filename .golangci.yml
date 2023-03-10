@@ -1,0 +1,5 @@
+---
+run:
+  tests: true
+issues:
+  exclude-use-default: false
