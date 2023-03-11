@@ -35,3 +35,6 @@ Thumbs.db
 
 # dotenv
 .env
+
+# dev
+fixtures/s3_event1.json
