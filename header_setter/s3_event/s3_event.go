@@ -21,20 +21,24 @@ func New(BucketName string, FileKey string, AwsRegion string) s3Event {
 }
 
 func (e s3Event) ProcessEvent() (string, int) {
-	s3svc, err := e.getS3Service()
-	if err != nil {
-		return fmt.Sprintf("Unable to create session: %v", err.Error()), 500
+	s3svc, svcErr := e.getS3Service()
+	if svcErr != nil {
+		return fmt.Sprintf("Unable to create session: %v", svcErr.Error()), 500
 	}
 	file := s3_file.New(e.BucketName, e.FileKey, s3svc)
 
-	res, err := file.CacheControlConfigured()
-	if err != nil {
-		return fmt.Sprintf("Unable to retrieve cache control setting: %v", err.Error()), 403
+	headObjectRes, headObjectErr := file.HeadObject()
+	if headObjectErr != nil {
+		return fmt.Sprintf("Unable to retrieve object head: %v", headObjectErr.Error()), 403
 	}
-	if res {
-		return fmt.Sprintf("File: %v/%v already has a cache control setting", e.BucketName, e.FileKey), 200
+	if headObjectRes.CacheControl != nil {
+		return fmt.Sprintf("File: %v/%v already has a cache control setting of %v", e.BucketName, e.FileKey, *headObjectRes.CacheControl), 200
 	}
-	return fmt.Sprintf("Event processed: %v", res), 201
+	copyRes, copyErr := file.ConfigureCacheControl(headObjectRes)
+	if copyErr != nil {
+		return fmt.Sprintf("Unable to configure cache control: %v", copyErr.Error()), 403
+	}
+	return fmt.Sprintf("Event processed: %v", copyRes.CopyObjectResult), 201
 }
 
 func (e s3Event) getS3Service() (*s3.S3, error) {
