@@ -1,26 +1,26 @@
 package s3_event
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/amlodzianowski/s3-cache-header-setter-go/header_setter/s3_file"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-type s3Event struct {
+type S3Event struct {
 	BucketName string
 	FileKey    string
 	AwsRegion  string
 }
 
-func New(BucketName string, FileKey string, AwsRegion string) s3Event {
-	e := s3Event{BucketName, FileKey, AwsRegion}
+func New(BucketName string, FileKey string, AwsRegion string) S3Event {
+	e := S3Event{BucketName, FileKey, AwsRegion}
 	return e
 }
 
-func (e s3Event) ProcessEvent() (string, int) {
+func (e S3Event) ProcessEvent() (string, int) {
 	s3svc, svcErr := e.getS3Service()
 	if svcErr != nil {
 		return fmt.Sprintf("Unable to create session: %v", svcErr.Error()), 500
@@ -41,9 +41,9 @@ func (e s3Event) ProcessEvent() (string, int) {
 	return fmt.Sprintf("Event processed: %v", copyRes.CopyObjectResult), 201
 }
 
-func (e s3Event) getS3Service() (*s3.S3, error) {
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(e.AwsRegion)},
+func (e S3Event) getS3Service() (*s3.Client, error) {
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(e.AwsRegion),
 	)
-	return s3.New(sess), err
+	return s3.NewFromConfig(cfg), err
 }
